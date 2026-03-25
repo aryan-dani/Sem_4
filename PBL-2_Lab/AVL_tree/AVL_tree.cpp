@@ -100,12 +100,15 @@ Node *insert(Node *root, string w, string m)
     return root;
 }
 
+// Updated Display function to show Balance Factor
 void display(Node *root)
 {
     if (root != NULL)
     {
         display(root->left);
-        cout << root->word << " : " << root->meaning << endl;
+        cout << "Word: " << root->word
+             << " | Meaning: " << root->meaning
+             << " | BF: " << getBF(root) << endl;
         display(root->right);
     }
 }
@@ -161,6 +164,7 @@ int main()
             root = insert(root, w, m);
             break;
         case 2:
+            cout << "\n--- Current Dictionary ---" << endl;
             display(root);
             break;
         case 3:
