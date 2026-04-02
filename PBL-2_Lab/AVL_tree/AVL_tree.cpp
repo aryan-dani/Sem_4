@@ -100,7 +100,6 @@ Node *insert(Node *root, string w, string m)
     return root;
 }
 
-// Updated Display function to show Balance Factor
 void display(Node *root)
 {
     if (root != NULL)
