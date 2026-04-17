@@ -41,11 +41,11 @@ public:
         for (int i = 0; i < n; i++)
         {
             cout << " mobile number: ";
-            cout << m[i].mob_no<<endl;
+            cout << m[i].mob_no << endl;
             cout << "the bill : ";
-            cout << m[i].bill<<endl;
+            cout << m[i].bill << endl;
             cout << "naam: ";
-            cout << m[i].name<<endl;
+            cout << m[i].name << endl;
         }
     }
 

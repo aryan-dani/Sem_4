@@ -1,31 +1,31 @@
 #include <iostream>
-#include <string>
 #include <stack>
 #include <queue>
+#include <string>
 
 using namespace std;
 
 struct node
 {
-    int id;
     string name;
+    int id;
     node *next;
 };
 
-class graph
+class Graph
 {
     node *head[20];
     string names[20];
     int n;
 
 public:
-    graph()
+    Graph()
     {
-        cout << "Enter number of users: ";
+        cout << "Enter the number of users: ";
         cin >> n;
         for (int i = 0; i < n; i++)
         {
-            cout << "Enter name for ID " << i << ": ";
+            cout << "Enter name for id " << i << endl;
             cin >> names[i];
             head[i] = NULL;
         }
@@ -39,7 +39,7 @@ public:
         {
             do
             {
-                if (v != i && v < n && v >= 0)
+                if (v != i && v >= 0 && v < n)
                 {
                     node *curr = new node;
                     curr->id = v;
@@ -47,9 +47,9 @@ public:
                     curr->next = head[i];
                     head[i] = curr;
                 }
-                cout << "Add another node (yes/no): ";
+                cout << "do you want to add more friends? ";
                 cin >> ans;
-            } while (ans == 'Y' || ans == 'y');
+            } while (ans == 'y' || ans == 'Y');
         }
     }
 
@@ -67,7 +67,6 @@ public:
             temp = temp->next;
         }
     }
-
     void nonRecursiveDFS(int start)
     {
         bool visited[20] = {false};
@@ -78,18 +77,13 @@ public:
         {
             int curr = s.top();
             s.pop();
-
-            if (!visited[curr])
-            {
-                cout << names[curr] << " ";
-                visited[curr] = true;
-            }
-
+            cout << names[curr] << " ";
             node *temp = head[curr];
             while (temp != NULL)
             {
                 if (!visited[temp->id])
                 {
+                    visited[temp->id] = true;
                     s.push(temp->id);
                 }
                 temp = temp->next;
@@ -127,7 +121,7 @@ public:
 
 int main()
 {
-    graph g;
+    Graph g;
     g.create();
 
     int start;
