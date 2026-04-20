@@ -1,121 +1,56 @@
 #include <iostream>
-#include <fstream>
-#include <string>
+#include <algorithm>
 using namespace std;
 
-// Implement Direct access file using hashing (linear probing with and without
-// replacement) perform following operations on it a) Create Student Database [Roll
-// no, Name, Marks] b) Display Database c) Add a record d) Search a
-// record e) Modify a record
-
-#define SIZE 10
-class Record
+#define MAXW 100
+#define MAXN 100
+int knapsack(int val[], int wt[], int n, int W)
 {
-public:
-    int rno;
-    string name;
-    int marks;
-};
-
-class Hashing
-{
-    Record ht[SIZE];
-
-public:
-    void init()
+    int B[MAXN + 1][MAXW + 1];
+    for (int i = 0; i <= n; i++)
     {
-        for (int i = 0; i < SIZE; i++)
+        for (int w = 0; w <= W; w++)
         {
-            ht[i].rno = -1;
-        }
-    }
-    int hashfunction(int key)
-    {
-        return (key % SIZE);
-    }
-
-    int findempty(int loc)
-    {
-        while (ht[loc].rno != -1)
-        {
-            loc = (loc + 1) % SIZE;
-        }
-        return loc;
-    }
-
-    void withoutreplacement(Record r)
-    {
-        int loc = hashfunction(r.rno);
-        loc = findempty(loc);
-        ht[loc] = r;
-    }
-
-    void withreplacement(Record r)
-    {
-        int loc = hashfunction(r.rno);
-        if (ht[loc].rno == -1)
-        {
-            ht[loc] = r;
-            return;
-        }
-        int oldHome = hashfunction(ht[loc].rno);
-        if (oldHome != loc)
-        {
-            Record temp = ht[loc];
-            ht[loc] = r;
-            ht[findempty(loc + 1)] = temp;
-        }
-        else
-        {
-            ht[findempty(loc + 1)] = r;
-        }
-    }
-
-    void search(int key)
-    {
-        int loc = hashfunction(key);
-        int start = loc;
-        while (ht[loc].rno != -1)
-        {
-            if (key = ht[loc].rno)
+            if (i == 0 || w == 0)
             {
-                cout << "Element found at " << loc;
+                B[i][w] = 0;
             }
-            loc = (loc + 1) % SIZE;
-            if (start == loc)
+            else if (wt[i - 1] <= w)
             {
-                break;
-            }
-        }
-        cout << "not found";
-    }
-
-    void disp()
-    {
-        cout << "Index\tRollNo\tName\tMarks";
-        for (int i = 0; i < SIZE; i++)
-        {
-            if (ht[i].rno != -1)
-            {
-                cout << i << " " << ht[i].rno << "\t" << ht[i].name << "\t" << ht[i].marks << endl;
+                B[i][w] = max(val[i - 1] + B[i - 1][w - wt[i - 1]], B[i - 1][w]);
             }
             else
             {
-                cout << "\t EMPTY\t";
+                B[i][w] = B[i - 1][w];
             }
         }
+    }
+    return B[n][W];
+}
+
+int main()
+{
+    int n, W;
+    cout << "Enter number of items in knapsack: ";
+    cin >> n;
+    cout << "enter total capacity of knapsack:";
+    cin >> W;
+
+    int val[MAXN];
+    int wt[MAXW];
+    cout << "enter profit values for each item: \n ";
+    for (int i = 0; i < n; i++)
+    {
+        cin >> val[i];
     }
 
-    void save()
+    cout << "enter weight values for each item: \n ";
+    for (int i = 0; i < n; i++)
     {
-        ofstream fout("hash.txt");
-        for (int i = 0; i < SIZE; i++)
-        {
-            if (ht[i].rno != -1)
-            {
-                fout << i << " " << ht[i].rno << "\t" << ht[i].name << "\t" << ht[i].marks << endl;
-            }
-        }
-        cout << "written to file! ";
+        cin >> wt[i];
     }
-};
+
+    int result = knapsack(val, wt, n, W);
+    cout << "Maximum Profit = " << result << endl;
+    return 0;
+}

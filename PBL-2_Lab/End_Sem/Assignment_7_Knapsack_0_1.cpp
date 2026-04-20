@@ -21,6 +21,19 @@ int knapsack(int W, int wt[], int val[], int n)
                 B[i][w] = B[i - 1][w];
         }
     }
+    int i = n, w = W;
+    cout << "Selected items (index): ";
+    while (i > 0 && w > 0)
+    {
+        if (B[i][w] != B[i - 1][w])
+        {
+            cout << i - 1 << " ";
+            w -= wt[i - 1];
+        }
+        i--;
+    }
+
+    cout << endl;
     return B[n][W];
 }
 
