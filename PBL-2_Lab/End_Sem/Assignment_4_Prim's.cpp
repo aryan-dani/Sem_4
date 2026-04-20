@@ -8,70 +8,37 @@ class Graph
 public:
     int cost[10][10];
     int n;
-    Graph()
+    int visited[10];
+
+    void input()
     {
-        cout << "Enter number of cities: ";
+        cout << "enter number of cities: ";
         cin >> n;
+        cout << "enter cost matrix";
         for (int i = 0; i < n; i++)
         {
+            visited[i] = 0;
             for (int j = 0; j < n; j++)
             {
-                if (i == j)
-                {
-                    cost[i][j] = 0;
-                }
-                else
+                cin >> cost[i][j];
+                if (cost[i][j] == 0)
                 {
                     cost[i][j] = INF;
                 }
             }
         }
     }
-
-    void create()
+    void Prims()
     {
-        int u, v, w;
-        int ch;
-        do
-        {
-            cout << "enter (u,v,w) : ";
-            cin >> u >> v >> w;
-            cost[u][v] = w;
-            cost[v][u] = w;
-            cout << " do you want to add any more edges ? :";
-            cin >> ch;
-        } while (ch == 'y' || ch == 'Y');
-    }
-
-    void display()
-    {
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << cost[i][j] << "\t";
-            }
-            cout << endl;
-        }
-    }
-
-    void prims()
-    {
-        int start;
-        cout << "Enter starting vertex: ";
-        cin >> start;
-        bool visited[10] = {false};
-        int nearest[10];
+        visited[0] = 1;
         int mincost = 0;
-
-        visited[start] = 1;
-
-        cout << "edes in MST are: \n";
-        for (int i = 1; i < n; i++)
+        int u = 0;
+        int v = 0;
+        for (int i = 0; i < n - 1; i++)
         {
             int min = INF;
-            int u = -1;
-            int v = -1;
+            u = -1;
+            v = -1;
             for (int j = 0; j < n; j++)
             {
                 if (visited[j])
@@ -87,24 +54,17 @@ public:
                     }
                 }
             }
-            if (u != -1 || v != -1)
-            {
-                cout << u << " - " << v << " cost: " << min << endl;
-                mincost += min;
-                visited[v] = 1;
-            }
+            cout << "mincost: " << u << "-" << v << " cost is - " << min << endl;
+            mincost += min;
+            visited[v] = 1;
         }
-        cout << "\nTotal Minimum Cost = " << mincost << endl;
+        cout << "MST: " << mincost;
     }
 };
 
 int main()
 {
     Graph g;
-
-    g.create();
-    g.display();
-    g.prims();
-
-    return 0;
+    g.input();
+    g.Prims();
 }
