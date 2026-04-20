@@ -39,6 +39,8 @@ public:
         {
             do
             {
+                cout << "Enter id of friend  " << i;
+                cin >> v;
                 if (v != i && v >= 0 && v < n)
                 {
                     node *curr = new node;
@@ -72,7 +74,7 @@ public:
         bool visited[20] = {false};
         stack<int> s;
         s.push(start);
-
+        visited[start] = true;
         while (!s.empty())
         {
             int curr = s.top();
