@@ -1,0 +1,133 @@
+// Write a program for Iterative and Recursive Binary Search and verify the time
+// complexity.
+// a. Accept Mobile user information (e.g. MobileNo, Name, BillAmount
+// etc.).
+// b. Display details for Mobileno specified by user (Linear Search and
+// Recursive and Non- recursive Binary Search)
+
+#include <iostream>
+using namespace std;
+
+class Mobile
+{
+public:
+    long long mobileno;
+    char name[10];
+    float bill;
+};
+
+class MobileList
+{
+public:
+    int n;
+    Mobile m[20];
+
+    MobileList()
+    {
+        cout << "enter number of users: ";
+        cin >> n;
+        cout << "Enter the users data ";
+        for (int i = 0; i < n; i++)
+        {
+            cout << "enter mobile number: ";
+            cin >> m[i].mobileno;
+            cout << "enter name: ";
+            cin >> m[i].name;
+            cout << "enter bill: ";
+            cin >> m[i].bill;
+            cout << endl;
+        }
+    }
+
+    int LinearSearch(int target)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (m[i].mobileno == target)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int binaryrecurisve(int low, int high, int target)
+    {
+
+        int mid = (low + high) / 2;
+        if (low > high)
+        {
+            return -1;
+        }
+        if (m[mid].mobileno == target)
+        {
+            return mid;
+        }
+        else if (m[mid].mobileno < target)
+        {
+            return binaryrecurisve(mid + 1, high, target);
+        }
+        else
+        {
+            return binaryrecurisve(low, mid - 1, target);
+        }
+    }
+
+    int non_recursiveBS(int target)
+    {
+        int low = 0;
+        int high = n - 1;
+        while (low <= high)
+        {
+            int mid = (low + high) / 2;
+            if (m[mid].mobileno == target)
+            {
+                return mid;
+            }
+            else if (m[mid].mobileno < target)
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+        return -1;
+    }
+};
+
+int main()
+{
+    MobileList ml;
+    cout << "Binary Search Recursive: \n";
+    int target = 86;
+    int midvalue1 = ml.LinearSearch(target);
+    if (midvalue1 == -1)
+    {
+        cout << "unsuccesfull search" << endl;
+    }
+    else
+    {
+        cout << "element present at " << midvalue1 << endl;
+    }
+    int midvalue2 = ml.binaryrecurisve(0, ml.n - 1, target);
+    if (midvalue2 == -1)
+    {
+        cout << "unsuccesfull search" << endl;
+    }
+    else
+    {
+        cout << "element present at " << midvalue2 << endl;
+    }
+    int midvalue3 = ml.non_recursiveBS(target);
+    if (midvalue3 == -1)
+    {
+        cout << "unsuccesfull search" << endl;
+    }
+    else
+    {
+        cout << "element present at " << midvalue3 << endl;
+    }
+    return 0;
+}
