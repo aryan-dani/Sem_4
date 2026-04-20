@@ -1,67 +1,121 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
 
-#define INF 999
+// Implement Direct access file using hashing (linear probing with and without
+// replacement) perform following operations on it a) Create Student Database [Roll
+// no, Name, Marks] b) Display Database c) Add a record d) Search a
+// record e) Modify a record
 
-class Graph
+#define SIZE 10
+class Record
 {
-    int n, cost[10][10], visited[10];
-
 public:
-    void input()
-    {
-        cin >> n;
-
-        for (int i = 0; i < n; i++)
-        {
-            visited[i] = 0;
-            for (int j = 0; j < n; j++)
-            {
-                cin >> cost[i][j];
-                if (cost[i][j] == 0)
-                    cost[i][j] = INF;
-            }
-        }
-    }
-
-    void prims()
-    {
-        visited[0] = 1;
-        int mincost = 0;
-
-        for (int e = 0; e < n - 1; e++)
-        {
-            int min = INF, u = -1, v = -1;
-
-            for (int i = 0; i < n; i++)
-            {
-                if (visited[i])
-                {
-                    for (int j = 0; j < n; j++)
-                    {
-                        if (!visited[j] && cost[i][j] < min)
-                        {
-                            min = cost[i][j];
-                            u = i;
-                            v = j;
-                        }
-                    }
-                }
-            }
-
-            cout << u << " - " << v << " = " << min << endl;
-
-            mincost += min;
-            visited[v] = 1;
-        }
-
-        cout << "Minimum cost = " << mincost;
-    }
+    int rno;
+    string name;
+    int marks;
 };
 
-int main()
+class Hashing
 {
-    Graph g;
-    g.input();
-    g.prims();
-}
+    Record ht[SIZE];
+
+public:
+    void init()
+    {
+        for (int i = 0; i < SIZE; i++)
+        {
+            ht[i].rno = -1;
+        }
+    }
+    int hashfunction(int key)
+    {
+        return (key % SIZE);
+    }
+
+    int findempty(int loc)
+    {
+        while (ht[loc].rno != -1)
+        {
+            loc = (loc + 1) % SIZE;
+        }
+        return loc;
+    }
+
+    void withoutreplacement(Record r)
+    {
+        int loc = hashfunction(r.rno);
+        loc = findempty(loc);
+        ht[loc] = r;
+    }
+
+    void withreplacement(Record r)
+    {
+        int loc = hashfunction(r.rno);
+        if (ht[loc].rno == -1)
+        {
+            ht[loc] = r;
+            return;
+        }
+        int oldHome = hashfunction(ht[loc].rno);
+        if (oldHome != loc)
+        {
+            Record temp = ht[loc];
+            ht[loc] = r;
+            ht[findempty(loc + 1)] = temp;
+        }
+        else
+        {
+            ht[findempty(loc + 1)] = r;
+        }
+    }
+
+    void search(int key)
+    {
+        int loc = hashfunction(key);
+        int start = loc;
+        while (ht[loc].rno != -1)
+        {
+            if (key = ht[loc].rno)
+            {
+                cout << "Element found at " << loc;
+            }
+            loc = (loc + 1) % SIZE;
+            if (start == loc)
+            {
+                break;
+            }
+        }
+        cout << "not found";
+    }
+
+    void disp()
+    {
+        cout << "Index\tRollNo\tName\tMarks";
+        for (int i = 0; i < SIZE; i++)
+        {
+            if (ht[i].rno != -1)
+            {
+                cout << i << " " << ht[i].rno << "\t" << ht[i].name << "\t" << ht[i].marks << endl;
+            }
+            else
+            {
+                cout << "\t EMPTY\t";
+            }
+        }
+    }
+
+    void save()
+    {
+        ofstream fout("hash.txt");
+        for (int i = 0; i < SIZE; i++)
+        {
+            if (ht[i].rno != -1)
+            {
+                fout << i << " " << ht[i].rno << "\t" << ht[i].name << "\t" << ht[i].marks << endl;
+            }
+        }
+        cout << "written to file! ";
+    }
+};
