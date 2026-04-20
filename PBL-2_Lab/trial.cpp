@@ -1,56 +1,53 @@
 #include <iostream>
-#include <algorithm>
+#include <cmath>
 using namespace std;
 
-#define MAXW 100
-#define MAXN 100
-int knapsack(int val[], int wt[], int n, int W)
+int board[20], countSol = 0;
+
+bool isSafe(int row, int col)
 {
-    int B[MAXN + 1][MAXW + 1];
-    for (int i = 0; i <= n; i++)
+    for (int i = 1; i < row; i++)
+        if (board[i] == col || abs(board[i] - col) == abs(i - row))
+            return false;
+    return true;
+}
+
+void solve(int row, int n)
+{
+    for (int col = 1; col <= n; col++)
     {
-        for (int w = 0; w <= W; w++)
+        if (isSafe(row, col))
         {
-            if (i == 0 || w == 0)
+            board[row] = col;
+
+            if (row == n)
             {
-                B[i][w] = 0;
-            }
-            else if (wt[i - 1] <= w)
-            {
-                B[i][w] = max(val[i - 1] + B[i - 1][w - wt[i - 1]], B[i - 1][w]);
+                countSol++;
+                cout << "\nSolution " << countSol << ":\n";
+
+                for (int i = 1; i <= n; i++)
+                {
+                    for (int j = 1; j <= n; j++)
+                        cout << (board[i] == j ? "Q " : ". ");
+                    cout << endl;
+                }
             }
             else
             {
-                B[i][w] = B[i - 1][w];
+                solve(row + 1, n);
             }
         }
     }
-    return B[n][W];
 }
 
 int main()
 {
-    int n, W;
-    cout << "Enter number of items in knapsack: ";
+    int n;
+    cout << "Enter N: ";
     cin >> n;
-    cout << "enter total capacity of knapsack:";
-    cin >> W;
 
-    int val[MAXN];
-    int wt[MAXW];
-    cout << "enter profit values for each item: \n ";
-    for (int i = 0; i < n; i++)
-    {
-        cin >> val[i];
-    }
+    solve(1, n);
 
-    cout << "enter weight values for each item: \n ";
-    for (int i = 0; i < n; i++)
-    {
-        cin >> wt[i];
-    }
-
-    int result = knapsack(val, wt, n, W);
-    cout << "Maximum Profit = " << result << endl;
+    cout << "\nTotal Solutions = " << countSol;
     return 0;
 }
