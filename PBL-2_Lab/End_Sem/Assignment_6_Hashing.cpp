@@ -98,14 +98,10 @@ public:
     {
         cout << "\nIndex\tRNo\tName\tMarks\n";
         for (int i = 0; i < SIZE; i++)
-        {
-            cout << i << "\t";
             if (ht[i].rno != -1)
-                ht[i].display();
-            else
-                cout << "-\tEmpty\t-";
-            cout << endl;
-        }
+                cout << ht[i].rno << " " << ht[i].name << " " << ht[i].marks << endl;
+
+        cout << "Saved to file\n";
     }
 
     void saveFile()

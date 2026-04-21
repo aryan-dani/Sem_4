@@ -1,57 +1,57 @@
-#include <iostream>
-#include <algorithm>
-using namespace std;
 
-#define MAXW 100
-#define MAXN 100
+int cost[10][10];
+int n;
 
-int knapsack(int val[], int wt[], int W, int n)
+define INF
+    Class Prims
 {
-    int B[MAXN + 1][MAXW + 1];
-    for (int i = 0; i <= n; i++)
+    void input()
     {
-        for (int w = 0; w <= W; w++)
+        enter number of cities;
+        cin n;
+        cout << enter cost matrix;
+        for (int i = 0 i < n)
         {
-            if (i == 0 || w == 0)
+            visited[i] = 0;
+            for (int j = 0; j < n)
             {
-                B[i][w] = 0;
-            }
-            else if (wt[i - 1] <= w)
-            {
-                B[i][w] = max(val[i - 1] + B[i - 1][w - wt[i - 1]], B[i - 1][w]);
-            }
-            else
-            {
-                B[i][w] = B[i - 1][w];
+                cin >> cost[i][j];
+                if (cost[i][j] == 0)
+                {
+                    cost[i][j] = INF;
+                }
             }
         }
     }
-    int i = n;
-    int w = W;
-    cout << "ITEMS INSIDE KNAPSACK ARE: ";
-    while (i > 0 && w > 0)
+
+    void Prims()
     {
-        if (B[i - 1][w] != B[i][w])
+        int mincost = 0;
+        int u, v = 0;
+        int visited[10];
+        visited[0] = 1;
+        for (int i = 1; i < n - 1; i++)
         {
-            cout << "Item id: " << i - 1 << " is in knapsack";
-            w = w - wt[i - 1];
+            int min = INF;
+            u, v = -1;
+            for (int j = 0; j < n; j++)
+            {
+                if (visited[j])
+                {
+                    for (int k = 0; k < n; k++)
+                    {
+                        if (!visited[k] && cost[j][k] < min)
+                        {
+                            min = cost[j][k];
+                            u = j;
+                            v = k;
+                        }
+                    }
+                }
+            }
+            cout << "min distance between " << u << "-" << v << " cost: " << min;
+            mincost = mincost + min;
+            visited[v] = 1;
         }
-        i--;
     }
-    cout << endl;
-    return B[n][W];
-}
-
-int main()
-{
-    cout << "enter number of items: ";
-    int n;
-    cin >> n;
-
-    int val[] = {10, 40, 50};
-    int wt[] = {5, 6, 8};
-    int W = 7;
-    int result = knapsack(val, wt, n, W);
-    cout << "Answer is: " << result;
-    return 0;
 }
