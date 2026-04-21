@@ -1,247 +1,229 @@
 #include <iostream>
 #include <queue>
-
 using namespace std;
 
-class avl_node
+class Node
 {
-    string word, meaning;
-    avl_node *left, *right;
-
 public:
-    friend class avlTree;
+    string word, meaning;
+    int height;
+    Node *left, *right;
+
+    Node(string w, string m)
+    {
+        word = w;
+        meaning = m;
+        height = 1;
+        left = right = NULL;
+    }
 };
 
-class avlTree
+class AVL
 {
-    avl_node *root;
+    Node *root;
 
-public:
-    int height(avl_node *);
-    int diff(avl_node *);
-    avl_node *ll_rotation(avl_node *);
-    avl_node *rr_rotation(avl_node *);
-    avl_node *lr_rotation(avl_node *);
-    avl_node *rl_rotation(avl_node *);
-    avl_node *balance(avl_node *);
-    avl_node *insert();
-    avl_node *insert(avl_node *, avl_node *);
-    void display_levelwise();
-    void inorder(avl_node *);
-    void preorder(avl_node *);
-    void postorder(avl_node *);
-
-    avlTree()
+    int getHeight(Node *n)
     {
-        root = NULL;
+        return n ? n->height : 0;
     }
 
-    void insert_word()
+    int getBalance(Node *n)
     {
-        avl_node *temp = insert();
-        root = insert(root, temp);
+        return n ? getHeight(n->left) - getHeight(n->right) : 0;
+    }
+
+    Node *rotateRight(Node *y)
+    {
+        Node *x = y->left;
+        Node *t = x->right;
+
+        x->right = y;
+        y->left = t;
+
+        y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+        x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+
+        return x;
+    }
+
+    Node *rotateLeft(Node *x)
+    {
+        Node *y = x->right;
+        Node *t = y->left;
+
+        y->left = x;
+        x->right = t;
+
+        x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+        y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+
+        return y;
+    }
+
+    Node *insert(Node *root, string w, string m)
+    {
+        if (!root)
+            return new Node(w, m);
+
+        if (w < root->word)
+            root->left = insert(root->left, w, m);
+        else if (w > root->word)
+            root->right = insert(root->right, w, m);
+        else
+        {
+            cout << "Word already exists. Use update option.\n";
+            return root;
+        }
+
+        root->height = 1 + max(getHeight(root->left), getHeight(root->right));
+
+        int balance = getBalance(root);
+
+        // LL
+        if (balance > 1 && w < root->left->word)
+            return rotateRight(root);
+
+        // RR
+        if (balance < -1 && w > root->right->word)
+            return rotateLeft(root);
+
+        // LR
+        if (balance > 1 && w > root->left->word)
+        {
+            root->left = rotateLeft(root->left);
+            return rotateRight(root);
+        }
+
+        // RL
+        if (balance < -1 && w < root->right->word)
+        {
+            root->right = rotateRight(root->right);
+            return rotateLeft(root);
+        }
+
+        return root;
+    }
+
+    void inorder(Node *root)
+    {
+        if (!root)
+            return;
+        inorder(root->left);
+        cout << root->word << " : " << root->meaning << endl;
+        inorder(root->right);
+    }
+
+    Node *search(Node *root, string key, int &comparisons)
+    {
+        if (!root)
+            return NULL;
+
+        comparisons++;
+
+        if (key == root->word)
+            return root;
+        else if (key < root->word)
+            return search(root->left, key, comparisons);
+        else
+            return search(root->right, key, comparisons);
+    }
+
+public:
+    AVL() { root = NULL; }
+
+    void insertWord()
+    {
+        string w, m;
+        cout << "Enter word: ";
+        cin >> w;
+
+        cout << "Enter meaning: ";
+        cin.ignore();
+        getline(cin, m);
+
+        root = insert(root, w, m);
     }
 
     void show()
     {
-        display_levelwise();
+        if (!root)
+        {
+            cout << "Dictionary is empty\n";
+            return;
+        }
+        inorder(root);
     }
 
-    void show_inorder()
+    void findWord()
     {
-        inorder(root);
+        string key;
+        cout << "Enter word to search: ";
+        cin >> key;
+
+        int comparisons = 0;
+        Node *res = search(root, key, comparisons);
+
+        if (res)
+            cout << "Meaning: " << res->meaning << endl;
+        else
+            cout << "Word not found\n";
+
+        cout << "Comparisons made: " << comparisons << endl;
+    }
+
+    void updateMeaning()
+    {
+        string key, newMeaning;
+        cout << "Enter word to update: ";
+        cin >> key;
+
+        int comparisons = 0;
+        Node *res = search(root, key, comparisons);
+
+        if (res)
+        {
+            cout << "Enter new meaning: ";
+            cin.ignore();
+            getline(cin, newMeaning);
+            res->meaning = newMeaning;
+            cout << "Updated successfully\n";
+        }
+        else
+        {
+            cout << "Word not found\n";
+        }
+
+        cout << "Comparisons made: " << comparisons << endl;
+    }
+
+    void maxComparisons()
+    {
+        cout << "Maximum comparisons (height of AVL tree): " << getHeight(root) << endl;
     }
 };
 
-avl_node *avlTree::insert()
-{
-    avl_node *temp = new avl_node;
-    cout << "Enter word: ";
-    cin >> temp->word;
-    cout << "Enter meaning: ";
-    cin >> temp->meaning;
-    temp->left = temp->right = NULL;
-    return temp;
-}
-
-avl_node *avlTree::insert(avl_node *root, avl_node *temp)
-{
-    if (root == NULL)
-        return temp;
-
-    if (temp->word < root->word)
-    {
-        root->left = insert(root->left, temp);
-        root = balance(root);
-    }
-    else if (temp->word > root->word)
-    {
-        root->right = insert(root->right, temp);
-        root = balance(root);
-    }
-
-    return root;
-}
-
-int avlTree::height(avl_node *temp)
-{
-    int h = 0;
-    if (temp != NULL)
-    {
-        int l_height = height(temp->left);
-        int r_height = height(temp->right);
-        h = max(l_height, r_height) + 1;
-    }
-    return h;
-}
-
-int avlTree::diff(avl_node *temp)
-{
-    int l_height = height(temp->left);
-    int r_height = height(temp->right);
-    int b_factor = (l_height - r_height);
-    return b_factor;
-}
-
-avl_node *avlTree::balance(avl_node *temp)
-{
-    int bal_factor = diff(temp);
-
-    if (bal_factor > 1)
-    {
-        if (diff(temp->left) > 0)
-            temp = ll_rotation(temp);
-        else
-            temp = lr_rotation(temp);
-    }
-    else if (bal_factor < -1)
-    {
-        if (diff(temp->right) > 0)
-            temp = rl_rotation(temp);
-        else
-            temp = rr_rotation(temp);
-    }
-
-    return temp;
-}
-
-avl_node *avlTree::ll_rotation(avl_node *parent)
-{
-    avl_node *temp = parent->left;
-    parent->left = temp->right;
-    temp->right = parent;
-    return temp;
-}
-
-avl_node *avlTree::rr_rotation(avl_node *parent)
-{
-    avl_node *temp = parent->right;
-    parent->right = temp->left;
-    temp->left = parent;
-    return temp;
-}
-
-avl_node *avlTree::lr_rotation(avl_node *parent)
-{
-    avl_node *temp = parent->left;
-    parent->left = rr_rotation(temp);
-    return ll_rotation(parent);
-}
-
-avl_node *avlTree::rl_rotation(avl_node *parent)
-{
-    avl_node *temp = parent->right;
-    parent->right = ll_rotation(temp);
-    return rr_rotation(parent);
-}
-
-void avlTree::display_levelwise()
-{
-    if (root == NULL)
-    {
-        cout << "Tree is empty\n";
-        return;
-    }
-
-    queue<avl_node *> q;
-    q.push(root);
-
-    while (!q.empty())
-    {
-        int levelSize = q.size();
-
-        while (levelSize--)
-        {
-            avl_node *temp = q.front();
-            q.pop();
-
-            cout << temp->word << " ";
-
-            if (temp->left != NULL)
-                q.push(temp->left);
-
-            if (temp->right != NULL)
-                q.push(temp->right);
-        }
-
-        cout << endl;
-    }
-}
-
-void avlTree::inorder(avl_node *tree)
-{
-    if (tree != NULL)
-    {
-        inorder(tree->left);
-        cout << tree->word << " : " << tree->meaning << endl;
-        inorder(tree->right);
-    }
-}
-
-void avlTree::preorder(avl_node *tree)
-{
-    if (tree != NULL)
-    {
-        cout << tree->word << " ";
-        preorder(tree->left);
-        preorder(tree->right);
-    }
-}
-
-void avlTree::postorder(avl_node *tree)
-{
-    if (tree != NULL)
-    {
-        postorder(tree->left);
-        postorder(tree->right);
-        cout << tree->word << " ";
-    }
-}
-
 int main()
 {
-    avlTree obj;
-    int choice;
+    AVL obj;
+    int ch;
 
     do
     {
-        cout << "\n1.Insert\n2.Display Tree\n3.Inorder\n4.Exit\nEnter choice: ";
-        cin >> choice;
+        cout << "\n1.Insert\n2.Display\n3.Search\n4.Update\n5.Max Comparisons\n6.Exit\nChoice: ";
+        cin >> ch;
 
-        switch (choice)
-        {
-        case 1:
-            obj.insert_word();
-            break;
-        case 2:
+        if (ch == 1)
+            obj.insertWord();
+        else if (ch == 2)
             obj.show();
-            break;
-        case 3:
-            obj.show_inorder();
-            break;
-        }
+        else if (ch == 3)
+            obj.findWord();
+        else if (ch == 4)
+            obj.updateMeaning();
+        else if (ch == 5)
+            obj.maxComparisons();
 
-    } while (choice != 4);
+    } while (ch != 6);
 
     return 0;
 }

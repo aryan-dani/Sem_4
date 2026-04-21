@@ -1,53 +1,57 @@
 #include <iostream>
-#include <cmath>
+#include <algorithm>
 using namespace std;
 
-int board[20], countSol = 0;
+#define MAXW 100
+#define MAXN 100
 
-bool isSafe(int row, int col)
+int knapsack(int val[], int wt[], int W, int n)
 {
-    for (int i = 1; i < row; i++)
-        if (board[i] == col || abs(board[i] - col) == abs(i - row))
-            return false;
-    return true;
-}
-
-void solve(int row, int n)
-{
-    for (int col = 1; col <= n; col++)
+    int B[MAXN + 1][MAXW + 1];
+    for (int i = 0; i <= n; i++)
     {
-        if (isSafe(row, col))
+        for (int w = 0; w <= W; w++)
         {
-            board[row] = col;
-
-            if (row == n)
+            if (i == 0 || w == 0)
             {
-                countSol++;
-                cout << "\nSolution " << countSol << ":\n";
-
-                for (int i = 1; i <= n; i++)
-                {
-                    for (int j = 1; j <= n; j++)
-                        cout << (board[i] == j ? "Q " : ". ");
-                    cout << endl;
-                }
+                B[i][w] = 0;
+            }
+            else if (wt[i - 1] <= w)
+            {
+                B[i][w] = max(val[i - 1] + B[i - 1][w - wt[i - 1]], B[i - 1][w]);
             }
             else
             {
-                solve(row + 1, n);
+                B[i][w] = B[i - 1][w];
             }
         }
     }
+    int i = n;
+    int w = W;
+    cout << "ITEMS INSIDE KNAPSACK ARE: ";
+    while (i > 0 && w > 0)
+    {
+        if (B[i - 1][w] != B[i][w])
+        {
+            cout << "Item id: " << i - 1 << " is in knapsack";
+            w = w - wt[i - 1];
+        }
+        i--;
+    }
+    cout << endl;
+    return B[n][W];
 }
 
 int main()
 {
+    cout << "enter number of items: ";
     int n;
-    cout << "Enter N: ";
     cin >> n;
 
-    solve(1, n);
-
-    cout << "\nTotal Solutions = " << countSol;
+    int val[] = {10, 40, 50};
+    int wt[] = {5, 6, 8};
+    int W = 7;
+    int result = knapsack(val, wt, n, W);
+    cout << "Answer is: " << result;
     return 0;
 }
