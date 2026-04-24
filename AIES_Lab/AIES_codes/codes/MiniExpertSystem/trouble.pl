@@ -3,7 +3,6 @@ ask(Problem):-
     read(Response),
     Response == yes.
 
-%Rules for troubleshooting
 issue(no_power):-
     ask(no_power),
     ask(no_lights).
@@ -20,7 +19,6 @@ issue(overheating):-
     ask(heat),
     ask(fan_noise).
 
-%Solutions
 solution(no_power):-
     write('Check power cable or battery'), nl.
 solution(slow_coomputer):-
@@ -30,7 +28,6 @@ solution(no_internet):-
 solution(overheating):-
     write('Clean fan or improve ventilation'), nl.
 
-%Main
 troubleshoot:-
     (issue(X) ->
         write('Problelm identified: '), write(X), nl,
