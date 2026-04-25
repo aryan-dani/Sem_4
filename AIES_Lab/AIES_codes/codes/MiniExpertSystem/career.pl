@@ -1,10 +1,8 @@
-%Ask user
 ask(Question) :-
     write('Do you like '), write(Question), write('? (yes/no): '),
     read(Response),
     Response == yes.
 
-%Career rules
 career(engineer):-
     ask(math),
     ask(problem_solving),
@@ -20,7 +18,6 @@ career(artist):-
     ask(communication),
     ask(helping_others).
 
-%Main
 suggest:-
     (career(X) ->
         write('Suggested career: '), write(X), nl
